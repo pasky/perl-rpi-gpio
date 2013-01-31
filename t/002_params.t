@@ -15,5 +15,5 @@ eval {
 	BCM  => [0, 1, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18, 21, 22, 23, 24, 25],
     );
 };
-ok(not $@);
+ok(not $@) or diag $@;
 isa_ok ($object, 'Device::RPi::GPIO');
