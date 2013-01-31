@@ -352,6 +352,9 @@ If there are none I will be surprised and always room for improvement
     NucWin
     nucwin@gmail.com
 
+    Petr Baudis
+    pasky@ucw.cz
+
 =head1 COPYRIGHT
 
 This program is free software; you can redistribute

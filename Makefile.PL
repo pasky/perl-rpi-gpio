@@ -6,7 +6,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME         => 'RPi::GPIO',
     VERSION_FROM => 'lib/RPi/GPIO.pm', # finds \$VERSION
-    AUTHOR       => 'NucWin (nucwin@gmail.com)',
+    AUTHOR       => [ 'NucWin (nucwin@gmail.com)' , 'Petr Baudis (pasky@ucw.cz)' ],
     ABSTRACT     => 'GPIO Access for Raspberry Pi',
     PREREQ_PM    => {
                      'Test::Simple' => 0.44,
