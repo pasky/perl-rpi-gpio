@@ -28,52 +28,44 @@ sub new {
     $self->{PATH} = '/sys/class/gpio/';
 
     if(defined($parameters{PATH})) {
-	if(-e $parameters{PATH} && -d $parameters{PATH}) {
-	    $self->{PATH} = $parameters{PATH};
-	    unless($self->{PATH} =~ m/\/\z/) {
-		$self->{PATH} .= '/';
-	    }
-	}
-	else {
+	unless (-e $parameters{PATH} && -d $parameters{PATH}) {
 	    croak 'Invalid PATH parameter';
+	}
+	$self->{PATH} = $parameters{PATH};
+	unless($self->{PATH} =~ m/\/\z/) {
+	    $self->{PATH} .= '/';
 	}
     }
 
     if(defined($parameters{MODE})) {
-	if($parameters{MODE} =~ m/^(PIN|BCM)\z/i ) {
-	    $self->{MODE} = uc($parameters{MODE});
-	}
-	else {
+	unless ($parameters{MODE} =~ m/^(PIN|BCM)\z/i ) {
 	    croak "Invalid MODE parameter";
 	}
+	$self->{MODE} = uc($parameters{MODE});
     }
 
     if(defined($parameters{PIN})) {
-	if(ref $parameters{PIN} eq 'ARRAY') {
-	    foreach(@{$parameters{PIN}}) {
-		unless(!defined $_ || $_ =~ m/^\d+\z/) {
-		    croak 'Invalid PIN parameter';
-		}
+	unless(ref $parameters{PIN} eq 'ARRAY') {
+	    croak "Invalid PIN parameter";
+	}
+	foreach(@{$parameters{PIN}}) {
+	    unless(!defined $_ || $_ =~ m/^\d+\z/) {
+		croak 'Invalid PIN parameter';
 	    }
-	    $self->{PIN} = $parameters{PIN};
 	}
-	else {
-	    croak "Invalid PIN parameter"
-	}
+	$self->{PIN} = $parameters{PIN};
     }
 
     if(defined($parameters{BCM})) {
-	if(ref $parameters{BCM} eq 'ARRAY') {
-	    foreach(@{$parameters{BCM}}) {
-		unless(defined $_ && $_ =~ m/^\d+\z/) {
-		    croak 'Invalid BCM parameter';
-		}
+	unless(ref $parameters{BCM} eq 'ARRAY') {
+	    croak "Invalid BCM parameter";
+	}
+	foreach(@{$parameters{BCM}}) {
+	    unless(defined $_ && $_ =~ m/^\d+\z/) {
+		croak 'Invalid BCM parameter';
 	    }
-	    $self->{BCM} = $parameters{BCM};
 	}
-	else {
-	    croak "Invalid BCM parameter"
-	}
+	$self->{BCM} = $parameters{BCM};
     }
 
     return $self;
@@ -96,22 +88,16 @@ sub setup {
     }
 
     #export gpio definition
-    if(open my $fh, '>', $self->{PATH}.'export') {
-	print $fh $channel;
-	close $fh;
-    }
-    else {
-	die 'setup error opening export';
-    }
+    open my $fh, '>', $self->{PATH}.'export'
+	or die 'setup error opening export';
+    print $fh $channel;
+    close $fh;
 
     #set gpio direction
-    if(open my $fh, '>', $self->{PATH}.'gpio'.$channel.'/direction') {
-	print $fh $direction;
-	close $fh;
-    }
-    else {
-	die 'setup error opening gpio direction';
-    }
+    open $fh, '>', $self->{PATH}.'gpio'.$channel.'/direction'
+	or die 'setup error opening gpio direction';
+    print $fh $direction;
+    close $fh;
 
     #one last sanity check
     unless(-e $self->{PATH}.'gpio'.$channel) {
@@ -136,13 +122,10 @@ sub output {
     $value = (defined($value) && $value)? 1 : 0;
 
     #set the $value on gpio channel
-    if(open my $fh, '>', $self->{PATH}.'gpio'.$channel.'/value') {
-	print $fh $value;
-	close $fh;
-    }
-    else {
-	die 'output error opening gpio value';
-    }
+    open my $fh, '>', $self->{PATH}.'gpio'.$channel.'/value'
+	or die 'output error opening gpio value';
+    print $fh $value;
+    close $fh;
 
     return 1;
 }
@@ -157,14 +140,11 @@ sub input {
 	croak 'Tried to input on invalid channel';
     }
 
-    if(open my $fh, '<', $self->{PATH}.'gpio'.$channel.'/value') {
-	my $value = <$fh>;
-	close $fh;
-	return $value;
-    }
-    else {
-	die 'input unable to open gpio value';
-    }
+    open my $fh, '<', $self->{PATH}.'gpio'.$channel.'/value'
+	or die 'input unable to open gpio value';
+    my $value = <$fh>;
+    close $fh;
+    return $value;
 }
 
 sub validate {
@@ -198,13 +178,10 @@ sub remove {
 	    croak 'Invalid remove channel';
 	}
 
-	if(open my $fh, '>', $self->{PATH}.'unexport') {
-	    print $fh $channel;
-	    close $fh;
-	}
-	else {
-	    die 'Erorr remove could not open unexport';
-	}
+	open my $fh, '>', $self->{PATH}.'unexport'
+	    or die 'Erorr remove could not open unexport';
+	print $fh $channel;
+	close $fh;
 
 	unless(!-e $self->{PATH}.'gpio'.$channel) {
 	    die 'Error remove could not unexport gpio'.$channel;
