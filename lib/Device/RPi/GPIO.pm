@@ -105,7 +105,6 @@ sub setup {
     }
 
     $self->{EXPORTED}{$channel} = $direction;
-    return 1;
 }
 
 sub output {
@@ -126,8 +125,6 @@ sub output {
 	or die 'output error opening gpio value';
     print $fh $value;
     close $fh;
-
-    return 1;
 }
 
 sub input {
@@ -165,16 +162,12 @@ sub remove {
 	unless(!-e $self->{PATH}.'gpio'.$channel) {
 	    die 'Error remove could not unexport gpio'.$channel;
 	}
-
-	return 1;
     }
     elsif(defined($channel) && $channel =~ m/^ALL\z/i) {
 	foreach(@{keys $self->{EXPORTED}}) {
-	    if($self->remove($_)){
-		delete $self->{EXPORTED}{$_};
-	    }
+	    $self->remove($_);
+	    delete $self->{EXPORTED}{$_};
 	}
-	return %{$self->{EXPORTED}} ? 0 : 1;
     }
     else {
 	croak 'Invalid remove parameter';
