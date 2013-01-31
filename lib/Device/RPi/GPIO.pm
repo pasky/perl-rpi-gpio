@@ -276,12 +276,12 @@ Device::RPi::GPIO - GPIO Access for Raspberry Pi
     use Device::RPi::GPIO;
 
     my $gpio = Device::RPi::GPIO->new(MODE => 'PIN');
-    $gpio->setup(11,'INPUT');
-    $gpio->setup(12,'OUTPUT');
+    $gpio->setup(11, 'IN');
+    $gpio->setup(12, 'OUT');
 
     my $value = $gpio->input(11);
-    print "INPUT 11 = $value\n";
-    $gpio->setup(12, $value);
+    print "INPUT 11 -> $value -> OUTPUT 12\n";
+    $gpio->output(12, $value);
 
 
 =head1 DESCRIPTION
