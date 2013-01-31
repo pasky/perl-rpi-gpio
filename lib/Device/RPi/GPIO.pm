@@ -286,7 +286,18 @@ Device::RPi::GPIO - GPIO Access for Raspberry Pi
 
 =head1 DESCRIPTION
 
-Simple use of Raspberry Pi's GPIO pins
+This module aims to provide a simple Perl interface to the Raspberry Pi's
+GPIO pins. It is not particularly high performance (using the /sys interface)
+and not particularly powerful, but it has no external dependencies and can
+get the job done in many common cases.
+
+As an alternative, you may consider using the Perl interface to the wiringPi
+library. However, the bindings are currently hopelessly rusty and the Wiring
+abstraction may not make much sense in Perl.
+
+As another alternative, you may use the L<Device::BCM2835> module. However,
+it also has an external dependency, requires root permissions and to actually
+use it, you must study the BCM2835 chip datasheet.
 
 
 =head1 USAGE
@@ -380,7 +391,8 @@ LICENSE file included with this module.
 
 =head1 SEE ALSO
 
-perl(1).
+perl(1), gpio(1), L<Device::BCM2835>, L<wiringPi>.
+
 https://github.com/nucwin/rpi-gpio
 
 =cut
