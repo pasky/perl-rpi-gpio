@@ -74,7 +74,7 @@ sub new {
 sub setup {
     my($self, $channel, $direction) = @_;
 
-    $channel = $self->validate($channel);
+    $channel = $self->_map_channel($channel);
 
     #check $direction
     unless(defined($direction) && $direction =~ m/^(IN|OUT)\z/i) {
@@ -111,7 +111,7 @@ sub setup {
 sub output {
     my($self, $channel, $value) = @_;
 
-    $channel = $self->validate($channel);
+    $channel = $self->_map_channel($channel);
 
     #check $channel is exported and set to output mode
     unless(defined($self->{EXPORTED}{$channel}) && $self->{EXPORTED}{$channel} eq 'out') {
@@ -133,7 +133,7 @@ sub output {
 sub input {
     my($self, $channel) = @_;
 
-    $channel = $self->validate($channel);
+    $channel = $self->_map_channel($channel);
 
     #check $channel is exported and set to input mode
     unless(defined($self->{EXPORTED}{$channel}) && $self->{EXPORTED}{$channel} eq 'in') {
@@ -147,32 +147,11 @@ sub input {
     return $value;
 }
 
-sub validate {
-    my($self, $channel) = @_;
-    unless(defined($channel) && $channel =~ /^\d+\z/) {
-        croak 'The channel sent was not an integer';
-    }
-
-    if($self->{MODE} eq 'BCM') {
-        unless(grep $_ == $channel, @{$self->{BCM}}) {
-            croak 'The BCM channel sent is invalid on a Raspberry Pi';
-        }
-    }
-    else {
-        $channel = $self->{PIN}[$channel];
-        unless(defined($channel)) {
-            croak 'The PIN channel sent is invalid on a Raspberry Pi';
-        }
-    }
-
-    return $channel;
-}
-
 sub remove {
     my($self, $channel) = @_;
 
     if(defined($channel) && $channel =~ m/^\d+\z/) {
-	$channel = $self->validate($channel);
+	$channel = $self->_map_channel($channel);
 	
 	unless(-e $self->{PATH}.'gpio'.$channel) {
 	    croak 'Invalid remove channel';
@@ -200,6 +179,27 @@ sub remove {
     else {
 	croak 'Invalid remove parameter';
     }
+}
+
+sub _map_channel {
+    my($self, $channel) = @_;
+    unless(defined($channel) && $channel =~ /^\d+\z/) {
+        croak 'The channel sent was not an integer';
+    }
+
+    if($self->{MODE} eq 'BCM') {
+        unless(grep $_ == $channel, @{$self->{BCM}}) {
+            croak 'The BCM channel sent is invalid on a Raspberry Pi';
+        }
+    }
+    else {
+        $channel = $self->{PIN}[$channel];
+        unless(defined($channel)) {
+            croak 'The PIN channel sent is invalid on a Raspberry Pi';
+        }
+    }
+
+    return $channel;
 }
 
 1;
