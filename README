@@ -32,6 +32,9 @@ DEPENDENCIES
 
 This module requires no extra dependencies.
 
+Some extra functionality might require the gpio(1) tool that comes
+with wiringPi.
+
 COPYRIGHT AND LICENCE
 
 Copyright (c) 2012, 2013 NucWin, Petr Baudis

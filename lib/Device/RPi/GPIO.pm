@@ -144,6 +144,20 @@ sub input {
     return $value;
 }
 
+sub pull {
+    my($self, $channel, $direction) = @_;
+
+    $channel = $self->_map_channel($channel);
+
+    #check $direction
+    unless(defined($direction) && $direction =~ m/^(UP|DOWN|TRI)\z/i) {
+	croak 'Invalid direction used for GPIO pull';
+    }
+    $direction = lc($direction);
+
+    system('gpio', '-g', 'mode', $channel, $direction) or die "Unable to execute the gpio command (install the wiringPi library?): $!";
+}
+
 sub remove {
     my($self, $channel) = @_;
 
@@ -215,6 +229,8 @@ Device::RPi::GPIO - GPIO Access for Raspberry Pi
     my $gpio = Device::RPi::GPIO->new(MODE => 'PIN');
     $gpio->setup(11, 'IN');
     $gpio->setup(12, 'OUT');
+
+    $gpio->pull(11, 'UP');
 
     my $value = $gpio->input(11);
     print "INPUT 11 -> $value -> OUTPUT 12\n";
@@ -288,6 +304,28 @@ Returns: TTL value (0 or 1).
 Set electrical value on pin of GPIO channel B<$channel>.
 
 B<$value> shall be TTL digital value 0 (ground) or 1 (Vcc)
+
+
+=item pull($channel, $direction)
+
+Configure internal resistor attached to the pin of GPIO channel
+B<$channel>. This makes sense only for channels in the input direction
+and it is useful for channels that may alternately be driven and have
+nothing connected to the pins.
+
+B<$direction> shall be either
+C<'UP'> (to enable internal pull-up that will set the pin to "1 by default"),
+C<'DOWN'> (to enable internal pull-down that will set the pin to "0 by default")
+or C<'TRI'> (to leave the pin in "floating state" where its value is undefined
+when nothing drives the pin).
+
+For example, if a button connects a pin to Vcc (1), you will wanto to enable
+the pin's internal pull-down resistor that will force the pin to ground (0)
+while the button is not pressed.
+
+As current kernels do not provide a /sys interface to setup the internal
+resistors, this specific function depends on the L<gpio(1)> tool that is
+distributed with the B<wiringPi> library.
 
 
 =item remove($channel)
