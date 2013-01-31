@@ -295,56 +295,61 @@ Simple use of Raspberry Pi's GPIO pins
 
 =item new(MODE => $mode, PIN => @pin, BCM => @bcm)
 
-    Create new Device::RPi:GPIO instance.
-    
-    PATH - Path to gpio
-    default: /sys/class/gpio/
-    
-    MODE - GPIO Access Method:
-    PIN: Raspberry Pi's GPIO pin numbers.
-    BCM: Raspberry Pi's Broadcom GPIO designation.
+Create new Device::RPi:GPIO instance.
 
-    PIN - Set Raspberry Pi PIN -> BCM map
-    [undef, undef, undef, 0, undef, 1, undef, 4, 14, undef, 15, 17, 18, 21, undef, 22, 23, undef, 24, 10, undef, 9, 25, 11, 8, undef, 7]
-    NOTE: the first undef is for array[0] as the RPi starts at PIN 1
+B<PATH> - Path to gpio
+(Default: C</sys/class/gpio/>)
 
-    BCM - List of BCM GPIO designations
-    [0, 1, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18, 21, 22, 23, 24, 25]
+B<MODE> - GPIO channel pin numbering method:
+(Default: C<'PIN'>)
 
-    returns: $self
+=over 4
+
+C<'PIN'>: Raspberry Pi's official GPIO pin numbers.
+
+C<'BCM'>: Raspberry Pi's Broadcom GPIO designation.
+
+=back
+
+B<PIN> - Set a custom Raspberry Pi PIN -> BCM map
+(Note: the first item shall be undef as the RPi numbering starts at pin 1)
+
+B<BCM> - Set a custom list of BCM pins available as RPi GPIO pins
+
+Returns: Device::RPi::GPIO instance.
 
 
 =item setup($channel, $direction)
 
-    Register a GPIO channel and set its direction
+Register a GPIO channel and set its direction.
 
-    $channel = PIN or BCM designation depending on mode
-    $direction = IN or OUT
-    returns: 1 success, 0 fail
+B<$channel> is pin number (according to mode)
+
+B<$direction> shall be either C<'IN'> or C<'OUT'>
+
+Returns: 1 on success, 0 on fail.
 
 
 =item input($channel)
 
-    Get GPIO's current state
+Get current electrical value on pin of GPIO channel B<$channel>.
 
-    $channel = PIN or BCM designation depending on mode
-    returns: 0,1 or undef if failed
+Returns: 0 or 1 on success, undef if failed.
 
 
 =item output($channel, $value)
 
-    Set GPIO's current state
+Set electrical value on pin of GPIO channel B<$channel>.
 
-    $channel = PIN or BCM designation depending on mode
-    $value = 0 or 1
-    returns: 1 success, 0 fail
+B<$value> shall be TTL digital value 0 (ground) or 1 (Vcc)
+
+Returns: 1 on success, 0 on fail.
+
 
 =item remove($channel)
 
-    remove a gpio channel
-    
-    $channel = PIN or BCM designation depending on mode
-    if $channel = 'ALL' it will remove all
+Unregister the GPIO channel B<$channel>. B<$channel> may be C<'ALL'>
+to unregister all channels.
 
 =back
 
