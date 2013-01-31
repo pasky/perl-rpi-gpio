@@ -395,4 +395,6 @@ perl(1), gpio(1), L<Device::BCM2835>, L<wiringPi>.
 
 https://github.com/nucwin/perl-rpi-gpio
 
+https://github.com/pasky/perl-rpi-gpio
+
 =cut
