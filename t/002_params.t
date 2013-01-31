@@ -1,6 +1,6 @@
 # -*- perl -*-
 
-# t/001_load.t - check module loading and create testing directory
+# t/002_params.t - check module loading when listing custom parameters
 
 use Test::More tests => 2;
 
