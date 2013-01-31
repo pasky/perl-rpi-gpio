@@ -164,7 +164,7 @@ sub remove {
 	}
     }
     elsif(defined($channel) && $channel =~ m/^ALL\z/i) {
-	foreach(@{keys $self->{EXPORTED}}) {
+	foreach(keys %{$self->{EXPORTED}}) {
 	    $self->remove($_);
 	    delete $self->{EXPORTED}{$_};
 	}
