@@ -293,7 +293,10 @@ Simple use of Raspberry Pi's GPIO pins
 
 =head1 USAGE
 
-=head2 new(MODE => $mode, PIN => @pin, BCM => @bcm)
+=over 4
+
+=item new(MODE => $mode, PIN => @pin, BCM => @bcm)
+
     Create new Device::RPi:GPIO instance.
     
     PATH - Path to gpio
@@ -313,7 +316,8 @@ Simple use of Raspberry Pi's GPIO pins
     returns: $self
 
 
-=head2 setup($channel, $direction)
+=item setup($channel, $direction)
+
     Register a GPIO channel and set its direction
 
     $channel = PIN or BCM designation depending on mode
@@ -321,25 +325,30 @@ Simple use of Raspberry Pi's GPIO pins
     returns: 1 success, 0 fail
 
 
-=head2 input($channel)
+=item input($channel)
+
     Get GPIO's current state
 
     $channel = PIN or BCM designation depending on mode
     returns: 0,1 or undef if failed
 
 
-=head2 output($channel, $value)
+=item output($channel, $value)
+
     Set GPIO's current state
 
     $channel = PIN or BCM designation depending on mode
     $value = 0 or 1
     returns: 1 success, 0 fail
 
-=head2 remove($channel)
+=item remove($channel)
+
     remove a gpio channel
     
     $channel = PIN or BCM designation depending on mode
     if $channel = 'ALL' it will remove all
+
+=back
 
 =head1 BUGS
 
