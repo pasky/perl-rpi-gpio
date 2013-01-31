@@ -1,6 +1,9 @@
 package Device::RPi::GPIO;
+
 use strict;
 use warnings;
+
+use Carp;
 
 BEGIN {
     use Exporter ();
@@ -32,7 +35,7 @@ sub new {
 	    }
 	}
 	else {
-	    warn 'Invalid PATH parameter';
+	    croak 'Invalid PATH parameter';
 	}
     }
 
@@ -41,39 +44,35 @@ sub new {
 	    $self->{MODE} = uc($parameters{MODE});
 	}
 	else {
-	    warn "Invalid MODE parameter";
+	    croak "Invalid MODE parameter";
 	}
     }
 
     if(defined($parameters{PIN})) {
 	if(ref $parameters{PIN} eq 'ARRAY') {
-	    my $pass = 1;
 	    foreach(@{$parameters{PIN}}) {
 		unless(!defined $_ || $_ =~ m/^\d+\z/) {
-		    warn 'Invalid PIN parameter';
-		    $pass--;
+		    croak 'Invalid PIN parameter';
 		}
 	    }
-	    $self->{PIN} = $parameters{PIN} if($pass);
+	    $self->{PIN} = $parameters{PIN};
 	}
 	else {
-	    warn "Invalid PIN parameter"
+	    croak "Invalid PIN parameter"
 	}
     }
 
     if(defined($parameters{BCM})) {
 	if(ref $parameters{BCM} eq 'ARRAY') {
-	    my $pass = 1;
 	    foreach(@{$parameters{BCM}}) {
 		unless(defined $_ && $_ =~ m/^\d+\z/) {
-		    warn 'Invalid BCM parameter';
-		    $pass--;
+		    croak 'Invalid BCM parameter';
 		}
 	    }
-	    $self->{BCM} = $parameters{BCM} if($pass);
+	    $self->{BCM} = $parameters{BCM};
 	}
 	else {
-	    warn "Invalid BCM parameter"
+	    croak "Invalid BCM parameter"
 	}
     }
 
@@ -83,17 +82,11 @@ sub new {
 sub setup {
     my($self, $channel, $direction) = @_;
 
-    #check $channel
     $channel = $self->validate($channel);
-    unless(defined($channel)) {
-	warn 'Invalid channel used for GPIO setup';
-	return 0;
-    }
 
     #check $direction
     unless(defined($direction) && $direction =~ m/^(IN|OUT)\z/i) {
-	warn 'Invalid direction used for GPIO setup';
-	return 0;
+	croak 'Invalid direction used for GPIO setup';
     }
     $direction = lc($direction);
 
@@ -108,8 +101,7 @@ sub setup {
 	close $fh;
     }
     else {
-	warn 'setup error opening export';
-	return 0;
+	die 'setup error opening export';
     }
 
     #set gpio direction
@@ -118,14 +110,12 @@ sub setup {
 	close $fh;
     }
     else {
-	warn 'setup error opening gpio direction';
-	return 0;
+	die 'setup error opening gpio direction';
     }
 
     #one last sanity check
     unless(-e $self->{PATH}.'gpio'.$channel) {
-	warn 'setup did not manage to configure the gpio channel';
-	return 0;
+	die 'setup did not manage to configure the gpio channel';
     }
 
     $self->{EXPORTED}{$channel} = $direction;
@@ -135,17 +125,11 @@ sub setup {
 sub output {
     my($self, $channel, $value) = @_;
 
-    #check $channel
     $channel = $self->validate($channel);
-    unless(defined($channel)) {
-	warn 'Invalid channel used for GPIO output';
-	return 0;
-    }
 
     #check $channel is exported and set to output mode
     unless(defined($self->{EXPORTED}{$channel}) && $self->{EXPORTED}{$channel} eq 'out') {
-	warn 'Tried to output on invalid channel';
-	return 0;
+	croak 'Tried to output on invalid channel';
     }
 
     #validate output
@@ -157,8 +141,7 @@ sub output {
 	close $fh;
     }
     else {
-	warn 'output error opening gpio value';
-	return 0;
+	die 'output error opening gpio value';
     }
 
     return 1;
@@ -167,17 +150,11 @@ sub output {
 sub input {
     my($self, $channel) = @_;
 
-    #check $channel
     $channel = $self->validate($channel);
-    unless(defined($channel)) {
-	warn 'Invalid channel used for GPIO setup';
-	return undef;
-    }
 
     #check $channel is exported and set to input mode
     unless(defined($self->{EXPORTED}{$channel}) && $self->{EXPORTED}{$channel} eq 'in') {
-	warn 'Tried to input on invalid channel';
-	return undef;
+	croak 'Tried to input on invalid channel';
     }
 
     if(open my $fh, '<', $self->{PATH}.'gpio'.$channel.'/value') {
@@ -186,29 +163,25 @@ sub input {
 	return $value;
     }
     else {
-	warn 'input unable to open gpio value';
-	return undef;
+	die 'input unable to open gpio value';
     }
 }
 
 sub validate {
     my($self, $channel) = @_;
     unless(defined($channel) && $channel =~ /^\d+\z/) {
-        warn 'The channel sent was not an integer';
-        return undef;
+        croak 'The channel sent was not an integer';
     }
 
     if($self->{MODE} eq 'BCM') {
         unless(grep $_ == $channel, @{$self->{BCM}}) {
-            warn 'The BCM channel sent is invalid on a Raspberry Pi';
-            return undef;
+            croak 'The BCM channel sent is invalid on a Raspberry Pi';
         }
     }
     else {
         $channel = $self->{PIN}[$channel];
         unless(defined($channel)) {
-            warn 'The PIN channel sent is invalid on a Raspberry Pi';
-            return undef;
+            croak 'The PIN channel sent is invalid on a Raspberry Pi';
         }
     }
 
@@ -219,16 +192,10 @@ sub remove {
     my($self, $channel) = @_;
 
     if(defined($channel) && $channel =~ m/^\d+\z/) {
-	#check $channel
 	$channel = $self->validate($channel);
-	unless(defined($channel)) {
-	    warn 'Invalid remove parameter';
-	    return 0;
-	}
 	
 	unless(-e $self->{PATH}.'gpio'.$channel) {
-	    warn 'Invalid remove channel';
-	    return 0;
+	    croak 'Invalid remove channel';
 	}
 
 	if(open my $fh, '>', $self->{PATH}.'unexport') {
@@ -236,13 +203,11 @@ sub remove {
 	    close $fh;
 	}
 	else {
-	    warn 'Erorr remove could not open unexport';
-	    return 0;
+	    die 'Erorr remove could not open unexport';
 	}
 
 	unless(!-e $self->{PATH}.'gpio'.$channel) {
-	    warn 'Error remove could not unexport gpio'.$channel;
-	    return 0;
+	    die 'Error remove could not unexport gpio'.$channel;
 	}
 
 	return 1;
@@ -252,15 +217,11 @@ sub remove {
 	    if($self->remove($_)){
 		delete $self->{EXPORTED}{$_};
 	    }
-	    else {
-		warn 'Error remove could not unexport gpio'.$_
-	    }
 	}
 	return %{$self->{EXPORTED}} ? 0 : 1;
     }
     else {
-	warn 'Invalid remove parameter';
-	return 0;
+	croak 'Invalid remove parameter';
     }
 }
 
@@ -338,14 +299,12 @@ B<$channel> is pin number (according to mode)
 
 B<$direction> shall be either C<'IN'> or C<'OUT'>
 
-Returns: 1 on success, 0 on fail.
-
 
 =item input($channel)
 
 Get current electrical value on pin of GPIO channel B<$channel>.
 
-Returns: 0 or 1 on success, undef if failed.
+Returns: TTL value (0 or 1).
 
 
 =item output($channel, $value)
@@ -353,8 +312,6 @@ Returns: 0 or 1 on success, undef if failed.
 Set electrical value on pin of GPIO channel B<$channel>.
 
 B<$value> shall be TTL digital value 0 (ground) or 1 (Vcc)
-
-Returns: 1 on success, 0 on fail.
 
 
 =item remove($channel)
