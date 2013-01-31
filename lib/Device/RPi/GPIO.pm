@@ -264,10 +264,8 @@ sub remove {
     }
 }
 
-#################### main pod documentation begin ###################
-## Below is the stub of documentation for your module.
-## You better edit it!
-
+1;
+__END__
 
 =head1 NAME
 
@@ -381,10 +379,3 @@ perl(1).
 https://github.com/nucwin/rpi-gpio
 
 =cut
-
-#################### main pod documentation end ###################
-
-
-1;
-# The preceding line will help the module return a true value
-
