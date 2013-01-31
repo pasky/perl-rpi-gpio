@@ -4,5 +4,5 @@ LICENSE
 Todo
 Changes
 Makefile.PL
-lib/RPi/GPIO.pm
+lib/Device/RPi/GPIO.pm
 t/001_load.t

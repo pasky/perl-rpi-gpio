@@ -1,9 +1,9 @@
 NAME
-    RPi::GPIO - GPIO Access for Raspberry Pi
+    Device::RPi::GPIO - GPIO Access for Raspberry Pi
 
 SYNOPSIS
-        use RPi::GPIO;
-        my $gpio = RPi::GPIO->new(MODE => 'PIN');
+        use Device::RPi::GPIO;
+        my $gpio = Device::RPi::GPIO->new(MODE => 'PIN');
         $gpio->setup(11,'INPUT');
         $gpio->setup(12,'OUTPUT');
         my $value = $gpio->input(11);
@@ -15,7 +15,7 @@ DESCRIPTION
 
 USAGE
   new(MODE => $mode, PIN => @pin, BCM => @bcm)
-    Create new RPi:GPIO instance.
+    Create new Device::RPi:GPIO instance.
         PATH - Path to gpio
         default: /sys/class/gpio/
     

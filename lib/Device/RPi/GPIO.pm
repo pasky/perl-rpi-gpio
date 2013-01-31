@@ -1,4 +1,4 @@
-package RPi::GPIO;
+package Device::RPi::GPIO;
 use strict;
 use warnings;
 
@@ -271,12 +271,12 @@ sub remove {
 
 =head1 NAME
 
-RPi::GPIO - GPIO Access for Raspberry Pi
+Device::RPi::GPIO - GPIO Access for Raspberry Pi
 
 =head1 SYNOPSIS
 
-    use RPi::GPIO;
-    my $gpio = RPi::GPIO->new(MODE => 'PIN');
+    use Device::RPi::GPIO;
+    my $gpio = Device::RPi::GPIO->new(MODE => 'PIN');
     $gpio->setup(11,'INPUT');
     $gpio->setup(12,'OUTPUT');
     my $value = $gpio->input(11);
@@ -292,7 +292,7 @@ Simple use of Raspberry Pi's GPIO pins
 =head1 USAGE
 
 =head2 new(MODE => $mode, PIN => @pin, BCM => @bcm)
-    Create new RPi:GPIO instance.
+    Create new Device::RPi:GPIO instance.
     
     PATH - Path to gpio
     default: /sys/class/gpio/

@@ -4,9 +4,9 @@
 
 use Test::More tests => 2;
 
-BEGIN { use_ok( 'RPi::GPIO' ); }
+BEGIN { use_ok( 'Device::RPi::GPIO' ); }
 
-my $object = RPi::GPIO->new ();
-isa_ok ($object, 'RPi::GPIO');
+my $object = Device::RPi::GPIO->new ();
+isa_ok ($object, 'Device::RPi::GPIO');
 
 
