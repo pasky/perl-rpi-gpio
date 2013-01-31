@@ -195,6 +195,12 @@ sub _map_channel {
     return $channel;
 }
 
+sub DESTROY {
+    my ($self) = @_;
+    local $!;
+    $self->remove('ALL');
+}
+
 1;
 __END__
 
