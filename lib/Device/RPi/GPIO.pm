@@ -155,7 +155,8 @@ sub pull {
     }
     $direction = lc($direction);
 
-    system('gpio', '-g', 'mode', $channel, $direction) or die "Unable to execute the gpio command (install the wiringPi library?): $!";
+    system('gpio', '-g', 'mode', $channel, $direction) == 0
+	or die "Unable to execute the gpio command (install the wiringPi library?): $!";
 }
 
 sub remove {
