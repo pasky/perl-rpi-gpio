@@ -216,12 +216,6 @@ sub _unexport {
     }
 }
 
-sub DESTROY {
-    my ($self) = @_;
-    local $!;
-    $self->remove('ALL');
-}
-
 1;
 __END__
 
@@ -242,6 +236,9 @@ Device::RPi::GPIO - GPIO Access for Raspberry Pi
     my $value = $gpio->input(11);
     print "INPUT 11 -> $value -> OUTPUT 12\n";
     $gpio->output(12, $value);
+
+    # Clean up before exit
+    $gpio->remove('ALL');
 
 
 =head1 DESCRIPTION
