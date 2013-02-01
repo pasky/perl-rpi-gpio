@@ -84,7 +84,7 @@ sub setup {
 
     #unexport if gpio definition exists
     if(-e $self->{PATH}.'gpio'.$channel) {
-	$self->remove($channel);
+	$self->_unexport($channel);
     }
 
     #export gpio definition
@@ -162,25 +162,18 @@ sub pull {
 sub remove {
     my($self, $channel) = @_;
 
-    if(defined($channel) && $channel =~ m/^\d+\z/) {
+    if(defined($channel) && $channel =~ m/^-?\d+\z/) {
 	$channel = $self->_map_channel($channel);
-	
+
 	unless(-e $self->{PATH}.'gpio'.$channel) {
 	    croak 'Invalid remove channel';
 	}
 
-	open my $fh, '>', $self->{PATH}.'unexport'
-	    or die 'Erorr remove could not open unexport';
-	print $fh $channel;
-	close $fh;
-
-	unless(!-e $self->{PATH}.'gpio'.$channel) {
-	    die 'Error remove could not unexport gpio'.$channel;
-	}
+	$self->_unexport($channel);
     }
     elsif(defined($channel) && $channel =~ m/^ALL\z/i) {
 	foreach(keys %{$self->{EXPORTED}}) {
-	    $self->remove($_);
+	    $self->_unexport($_);
 	    delete $self->{EXPORTED}{$_};
 	}
     }
@@ -208,6 +201,19 @@ sub _map_channel {
     }
 
     return $channel;
+}
+
+sub _unexport {
+    my ($self, $channel) = @_;
+
+    open my $fh, '>', $self->{PATH}.'unexport'
+	or die 'Erorr could not open unexport';
+    print $fh $channel;
+    close $fh;
+
+    unless(!-e $self->{PATH}.'gpio'.$channel) {
+	die 'Error could not unexport gpio'.$channel;
+    }
 }
 
 sub DESTROY {
