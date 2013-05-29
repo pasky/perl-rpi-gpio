@@ -22,7 +22,7 @@ sub new {
     my $self = bless({EXPORTED => {}}, ref ($class) || $class);
 
     #note the pin numbers start at 1 and arrays start at 0
-    $self->{PIN}  = [undef, undef, undef, 2, undef, 3, undef, 4, 14, undef, 15, 17, 18, 21, undef, 22, 23, undef, 24, 10, undef, 9, 25, 11, 8, undef, 7];
+    $self->{PIN}  = [undef, undef, undef, 2, undef, 3, undef, 4, 14, undef, 15, 17, 18, 27, undef, 22, 23, undef, 24, 10, undef, 9, 25, 11, 8, undef, 7];
     $self->{BCM}  = [0, 1, 4, 7, 8, 9, 10, 11, 14, 15, 17, 18, 21, 22, 23, 24, 25];
     $self->{MODE} = 'PIN';
     $self->{PATH} = '/sys/class/gpio/';
